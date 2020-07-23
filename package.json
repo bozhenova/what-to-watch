@@ -1,5 +1,5 @@
 {
-  "name": "cinemaddict",
+  "name": "what-to-watch",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -11,15 +11,26 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bozhenova/cinemaddict.git"
+    "url": "git+https://github.com/bozhenova/what-to-watch.git"
+  },
+  "jest": {
+    "setupFiles": [
+      "./src/setupTests.js"
+    ]
+  },
+  "babel": {
+    "presets": [
+      "@babel/preset-env",
+      "@babel/preset-react"
+    ],
+    "plugins": [
+      "@babel/plugin-proposal-class-properties"
+    ]
   },
   "keywords": [],
+  "homepage": "https://github.com/bozhenova/what-to-watch",
   "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/bozhenova/cinemaddict/issues"
-  },
-  "homepage": "https://github.com/bozhenova/cinemaddict#readme",
   "dependencies": {
     "@babel/plugin-proposal-class-properties": "^7.10.4",
     "axios": "^0.19.2",
