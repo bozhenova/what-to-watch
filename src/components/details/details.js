@@ -1,16 +1,15 @@
 import React from 'react';
 import { parseRuntime } from '../../utils';
+const shortid = require('shortid');
 
 const Details = ({ movie }) => {
   const { crew, runtime, genre, release } = movie;
   const actors = crew.starring.map((actor, index) => {
     return (
-      <>
-        <li key={index} style={{ listStyle: `none` }}>
-          {actor}
-          {index === crew.starring.length - 1 ? `` : `,`}{' '}
-        </li>
-      </>
+      <li key={shortid.generate()} style={{ listStyle: `none` }}>
+        {actor}
+        {index === crew.starring.length - 1 ? `` : `,`}{' '}
+      </li>
     );
   });
 

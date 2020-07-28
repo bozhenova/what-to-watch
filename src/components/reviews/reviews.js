@@ -1,5 +1,6 @@
 import React from 'react';
 import { parseDate } from '../../utils';
+const shortid = require('shortid');
 
 const Reviews = ({ reviews }) => {
   return (
@@ -7,7 +8,7 @@ const Reviews = ({ reviews }) => {
       <div className='movie-card__reviews-col'>
         {reviews.map(review => {
           return (
-            <div className='review'>
+            <div className='review' key={shortid.generate()}>
               <blockquote className='review__quote'>
                 <p className='review__text'>{review.comment}</p>
                 <footer className='review__details'>

@@ -8,7 +8,6 @@ const MoviesList = ({ movies }) => {
 
   const selectCard = movie => {
     setActiveCard(movie);
-    console.log(activeCard);
   };
 
   return (

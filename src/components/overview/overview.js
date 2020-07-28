@@ -1,16 +1,15 @@
 import React from 'react';
 import { getRatingLevel } from '../../utils';
+const shortid = require('shortid');
 
 const Overview = ({ movie }) => {
   const { rating, description, crew } = movie;
   const actors = crew.starring.map((actor, index) => {
     return (
-      <>
-        <span key={index}>
-          {actor}
-          {index === crew.starring.length - 1 ? `` : `,`}{' '}
-        </span>
-      </>
+      <span key={shortid.generate()}>
+        {actor}
+        {index === crew.starring.length - 1 ? `` : `,`}{' '}
+      </span>
     );
   });
 
