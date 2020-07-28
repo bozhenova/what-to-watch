@@ -1,15 +1,38 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { Provider } from 'react-redux';
+import { createStore, applyMiddleware } from 'redux';
+import thunk from 'redux-thunk';
+import { compose } from 'recompose';
 import { Router } from 'react-router-dom';
+
+import rootReducer from './redux/reducer';
+import configureAPI from './services/api';
 import ErrorBoundary from './components/error-boundary';
 import App from './components/app';
 import history from './history';
 
-ReactDOM.render(
-  <ErrorBoundary>
-    <Router history={history}>
-      <App />
-    </Router>
-  </ErrorBoundary>,
-  document.getElementById('root')
-);
+const initApp = () => {
+  const api = configureAPI(() => {});
+  const store = createStore(
+    rootReducer,
+    compose(
+      applyMiddleware(thunk.withExtraArgument(api)),
+      window.__REDUX_DEVTOOLS_EXTENSION__ &&
+        window.__REDUX_DEVTOOLS_EXTENSION__()
+    )
+  );
+
+  ReactDOM.render(
+    <Provider store={store}>
+      <ErrorBoundary>
+        <Router history={history}>
+          <App />
+        </Router>
+      </ErrorBoundary>
+    </Provider>,
+    document.getElementById('root')
+  );
+};
+
+initApp();
