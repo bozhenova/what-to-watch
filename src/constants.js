@@ -1,4 +1,5 @@
 export const Constants = {
+  URL: `https://htmlacademy-react-3.appspot.com/`,
   BASE_URL: `https://htmlacademy-react-3.appspot.com/wtw`,
   FILMS_PATH: `/films`,
   PROMO_MOVIE_PATH: `/promo`,
@@ -26,6 +27,11 @@ export const RatingLevels = {
   GOOD: 5,
   VERY_GOOD: 8,
   AWESOME: 10
+};
+
+export const KeyCodes = {
+  ENTER: 'Enter',
+  ESCAPE: 'Escape'
 };
 
 export const Ratings = {
