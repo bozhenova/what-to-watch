@@ -5,6 +5,10 @@ export const parseDate = date => {
   return new Date(date).toLocaleDateString('en-US', options);
 };
 
+export const parseRating = rating => {
+  return rating.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+};
+
 export const parseRuntime = time => {
   const hours = Math.floor(time / 60);
   const minutes = Math.floor(time % 60);
@@ -32,4 +36,10 @@ export const getRatingLevel = ratingScore => {
   } else {
     return Ratings.AWESOME;
   }
+};
+
+export const updateItemsList = (items, newItem) => {
+  return items.map(item => {
+    return item.id === newItem.id ? newItem : item;
+  });
 };

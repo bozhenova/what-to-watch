@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import VideoPlayer from '../video-player';
+import { Link } from 'react-router-dom';
 
 const MovieCard = ({ movie, selectCard }) => {
-  const { title, image } = movie;
+  const { title, image, id } = movie;
   const [isActive, setIsActive] = useState(false);
 
   const onMouseEnter = () => {
@@ -29,9 +30,9 @@ const MovieCard = ({ movie, selectCard }) => {
         </div>
       )}
       <h3 className='small-movie-card__title'>
-        <a className='small-movie-card__link' href='movie-page.html'>
+        <Link to={`/film/${id}`} className='small-movie-card__link'>
           {title}
-        </a>
+        </Link>
       </h3>
     </article>
   );

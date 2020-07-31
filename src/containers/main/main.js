@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 
-import Header from '../../components/header';
+import HeaderWrapper from '../../components/header';
 import Footer from '../../components/footer';
 import MoviesList from '../../components/movies-list/';
 import {
@@ -48,7 +48,7 @@ class Main extends PureComponent {
             <img src={background} alt={title} />
           </div>
           <h1 className='visually-hidden'>WTW</h1>
-          <Header classModPrefix={`movie-card`} />
+          <HeaderWrapper classModPrefix={`movie-card`} />
           <div className='movie-card__wrap'>
             <div className='movie-card__info'>
               <div className='movie-card__poster'>
