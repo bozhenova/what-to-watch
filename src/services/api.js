@@ -10,9 +10,8 @@ const configureAPI = onLoginFail => {
 
   const onSuccess = response => response.data;
 
-  const onFail = response => {
-    console.log(response);
-    if (response.status === Constants.ACCESS_DENIED) {
+  const onFail = ({ response }) => {
+    if (response.status && response.status === Constants.ACCESS_DENIED) {
       onLoginFail();
       return response;
     }
