@@ -1,6 +1,7 @@
 import { ActionTypes as types } from '../../ActionTypes';
 import { Constants } from '../../../constants';
 import { adaptMovies, adaptMovie } from '../../../adapter';
+import { getMovieById } from './selectors';
 
 export const ActionCreator = {
   setGenre: genre => ({
@@ -10,10 +11,6 @@ export const ActionCreator = {
   setTab: tab => ({
     type: types.SET_TAB,
     payload: tab
-  }),
-  setCurrentMovie: id => ({
-    type: types.SET_CURRENT_MOVIE,
-    payload: id
   }),
   loadMovies: movies => ({
     type: types.LOAD_MOVIES,
@@ -37,5 +34,15 @@ export const Operations = {
       .get(`${Constants.FILMS_PATH}${Constants.PROMO_MOVIE_PATH}`)
       .then(response => adaptMovie(response))
       .then(data => dispatch(ActionCreator.loadPromoMovie(data)));
+  },
+  loadMovie: id => (dispatch, _getState) => {
+    const state = _getState();
+    const movie = getMovieById(state, id);
+
+    if (!movie) {
+      return dispatch(Operations.loadMovies());
+    }
+
+    return Promise.resolve(movie);
   }
 };

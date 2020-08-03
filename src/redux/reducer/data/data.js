@@ -3,8 +3,6 @@ import { ActionTypes as types } from '../../ActionTypes';
 const initialState = {
   promoMovie: {},
   movies: [],
-  similarMovies: [],
-  currentMovieId: null,
   currentTab: 'Overview',
   currentGenre: 'All genres'
 };
@@ -16,8 +14,6 @@ export const reducer = (state = initialState, action) => {
         ...state,
         currentGenre: action.payload
       };
-    case types.SET_CURRENT_MOVIE:
-      return { ...state, currentMovieId: action.payload };
     case types.SET_TAB:
       return {
         ...state,

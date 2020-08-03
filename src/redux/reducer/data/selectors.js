@@ -1,4 +1,5 @@
 import { createSelector } from 'reselect';
+import { Constants } from '../../../constants';
 
 export const getCurrentTab = state => state.data.currentTab;
 export const getCurrentGenre = state => state.data.currentGenre;
@@ -16,5 +17,20 @@ export const getSortedMovies = createSelector(
     return genre === 'All genres'
       ? allMovies
       : allMovies.filter(movie => movie.genre === genre);
+  }
+);
+
+export const getMovieById = (state, id) => {
+  const movies = getSortedMovies(state);
+  return movies && movies.find(movie => movie.id == id);
+};
+
+export const getSimilarMovies = createSelector(
+  getSortedMovies,
+  getMovieById,
+  (movies, currentMovie = {}) => {
+    return movies
+      .filter(movie => movie.id !== currentMovie.id)
+      .slice(0, Constants.MAX_SIMILAR_MOVIES);
   }
 );
