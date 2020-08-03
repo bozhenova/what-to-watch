@@ -1,6 +1,7 @@
 import React from 'react';
 import { Tabs } from '../../constants';
 const shortid = require('shortid');
+import PropTypes from 'prop-types';
 
 const TabsList = ({ onTabChange, currentTab }) => {
   const handleClick = e => {
@@ -28,6 +29,11 @@ const TabsList = ({ onTabChange, currentTab }) => {
       </ul>
     </nav>
   );
+};
+
+TabsList.propTypes = {
+  onTabChange: PropTypes.func.isRequired,
+  currentTab: PropTypes.string.isRequired
 };
 
 export default TabsList;

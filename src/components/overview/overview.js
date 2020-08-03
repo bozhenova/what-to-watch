@@ -1,6 +1,7 @@
 import React from 'react';
-import { getRatingLevel } from '../../utils';
+import { getRatingLevel, parseRating } from '../../utils';
 const shortid = require('shortid');
+import PropTypes from 'prop-types';
 
 const Overview = ({ movie }) => {
   const { rating, description, crew } = movie;
@@ -21,7 +22,9 @@ const Overview = ({ movie }) => {
           <span className='movie-rating__level'>
             {getRatingLevel(rating.score)}
           </span>
-          <span className='movie-rating__count'>{rating.count} ratings</span>
+          <span className='movie-rating__count'>
+            {parseRating(rating.count)} ratings
+          </span>
         </p>
       </div>
 
@@ -38,6 +41,10 @@ const Overview = ({ movie }) => {
       </div>
     </>
   );
+};
+
+Overview.propTypes = {
+  movie: PropTypes.object.isRequired
 };
 
 export default Overview;

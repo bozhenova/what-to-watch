@@ -38,4 +38,8 @@ const MovieCard = ({ movie, selectCard }) => {
   );
 };
 
+MovieCard.propTypes = {
+  selectCard: PropTypes.func.isRequired,
+  movie: PropTypes.object.isRequired
+};
 export default MovieCard;

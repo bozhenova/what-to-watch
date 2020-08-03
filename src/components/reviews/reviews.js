@@ -1,6 +1,7 @@
 import React from 'react';
 import { parseDate } from '../../utils';
 const shortid = require('shortid');
+import PropTypes from 'prop-types';
 
 const Reviews = ({ reviews }) => {
   return (
@@ -25,6 +26,10 @@ const Reviews = ({ reviews }) => {
       </div>
     </div>
   );
+};
+
+Reviews.propTypes = {
+  reviews: PropTypes.array.isRequired
 };
 
 export default Reviews;

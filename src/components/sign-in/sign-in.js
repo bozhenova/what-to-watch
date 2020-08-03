@@ -26,7 +26,7 @@ const SignIn = () => {
 
   return (
     <div className='user-page'>
-      <HeaderWrapper classModPrefix={`user-page`} />
+      <HeaderWrapper classMod={`user-page__head`} />
       <div className='sign-in user-page__content'>
         <form action='#' className='sign-in__form' onSubmit={handleFormSubmit}>
           <div className='sign-in__fields'>

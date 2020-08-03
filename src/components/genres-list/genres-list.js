@@ -1,5 +1,6 @@
 import React from 'react';
 const shortid = require('shortid');
+import PropTypes from 'prop-types';
 
 const GenresList = ({ currentGenre, onGenreChange, genres }) => {
   const handleClick = e => {
@@ -37,6 +38,12 @@ const GenresList = ({ currentGenre, onGenreChange, genres }) => {
       })}
     </ul>
   );
+};
+
+GenresList.propTypes = {
+  currentGenre: PropTypes.string.isRequired,
+  onGenreChange: PropTypes.func.isRequired,
+  genres: PropTypes.array.isRequired
 };
 
 export default GenresList;

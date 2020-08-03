@@ -1,6 +1,7 @@
 import React from 'react';
 import { parseRuntime } from '../../utils';
 const shortid = require('shortid');
+import PropTypes from 'prop-types';
 
 const Details = ({ movie }) => {
   const { crew, runtime, genre, release } = movie;
@@ -44,6 +45,10 @@ const Details = ({ movie }) => {
       </div>
     </div>
   );
+};
+
+Details.propTypes = {
+  movie: PropTypes.object.isRequired
 };
 
 export default Details;

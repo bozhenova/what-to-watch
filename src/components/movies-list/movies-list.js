@@ -4,7 +4,7 @@ import MovieCard from '../movie-card';
 const shortid = require('shortid');
 
 const MoviesList = ({ movies }) => {
-  const [activeCard, setActiveCard] = useState(movies[0]);
+  const [activeCard, setActiveCard] = useState({});
 
   const selectCard = movie => {
     setActiveCard(movie);
@@ -23,6 +23,10 @@ const MoviesList = ({ movies }) => {
       })}
     </div>
   );
+};
+
+MoviesList.propTypes = {
+  movies: PropTypes.array.isRequired
 };
 
 export default MoviesList;
