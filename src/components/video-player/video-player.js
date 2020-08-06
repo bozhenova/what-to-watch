@@ -3,16 +3,13 @@ import PropTypes from 'prop-types';
 
 const VideoPlayer = ({ movie, isActive }) => {
   const { poster, preview } = movie;
-  const videoRef = useRef(null);
+  const videoRef = useRef();
 
   useEffect(() => {
     if (isActive) {
-      const timer = setTimeout(() => {
-        videoRef.current.play();
-      }, 1000);
-      return () => {
-        clearTimeout(timer);
-      };
+      videoRef.current.play();
+    } else {
+      videoRef.current.pause();
     }
   }, [isActive]);
 

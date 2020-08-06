@@ -3,16 +3,20 @@ import PropTypes from 'prop-types';
 import VideoPlayer from '../video-player';
 import { Link } from 'react-router-dom';
 
-const MovieCard = ({ movie, selectCard }) => {
+const MovieCard = ({ movie }) => {
   const { title, image, id } = movie;
   const [isActive, setIsActive] = useState(false);
 
+  let timer;
+
   const onMouseEnter = () => {
-    selectCard(movie);
-    setIsActive(true);
+    timer = setTimeout(() => {
+      setIsActive(true);
+    }, 1000);
   };
 
   const onMouseLeave = () => {
+    clearTimeout(timer);
     setIsActive(false);
   };
 
@@ -39,7 +43,6 @@ const MovieCard = ({ movie, selectCard }) => {
 };
 
 MovieCard.propTypes = {
-  selectCard: PropTypes.func.isRequired,
   movie: PropTypes.object.isRequired
 };
 export default MovieCard;
