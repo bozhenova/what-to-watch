@@ -1,15 +1,63 @@
-import React from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import HeaderWrapped from '../header';
 import { getMovieById } from '../../redux/reducer/data/selectors';
-import { Operations } from '../../redux/reducer/data/actions';
+import { Operations as DataOperations } from '../../redux/reducer/data/actions';
+import {
+  Operations as ReviewsOperations,
+  ActionCreator
+} from '../../redux/reducer/reviews/actions';
+import {
+  getReviewSendingStatus,
+  getReviewSendingProcessStatus
+} from '../../redux/reducer/reviews/selectors';
+import { Constants } from '../../constants';
 
 const AddReview = () => {
+  const form = useRef();
   const dispatch = useDispatch();
+
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState('');
+  const [isValid, setIsValid] = useState(false);
+
+  const isSent = useSelector(getReviewSendingStatus);
+  const isSending = useSelector(getReviewSendingProcessStatus);
+
   const { id } = useParams();
-  dispatch(Operations.loadMovie(id));
   const movie = useSelector(state => getMovieById(state, id));
+  dispatch(DataOperations.loadMovie(id));
+
+  const handleTextareaChange = e => {
+    setComment(e.target.value);
+  };
+
+  const handleRatingChange = e => {
+    setRating(e.target.value);
+  };
+
+  const handleFormSubmit = e => {
+    e.preventDefault();
+    dispatch(ReviewsOperations.postReview(id, { comment, rating }));
+    dispatch(ActionCreator.lockForm(true));
+  };
+
+  useEffect(() => {
+    const hasText =
+      comment.length >= Constants.MIN_TEXT_LENGTH &&
+      comment.length <= Constants.MAX_TEXT_LENGTH;
+    const hasRating = rating > 0;
+    setIsValid(hasText && hasRating);
+
+    if (isSent) {
+      setIsValid(false);
+      setRating(0);
+      setComment('');
+      dispatch(ActionCreator.setSendingStatus(false));
+      form.current.reset();
+    }
+  }, [comment, rating, isSent]);
 
   const { title, poster, color, background } = movie;
   return (
@@ -31,9 +79,14 @@ const AddReview = () => {
       </div>
 
       <div className='add-review'>
-        <form action='#' className='add-review__form'>
+        <form
+          action='#'
+          className='add-review__form'
+          onSubmit={handleFormSubmit}
+          ref={form}
+        >
           <div className='rating'>
-            <div className='rating__stars'>
+            <div className='rating__stars' onChange={handleRatingChange}>
               <input
                 className='rating__input'
                 id='star-1'
@@ -97,9 +150,17 @@ const AddReview = () => {
               name='review-text'
               id='review-text'
               placeholder='Review text'
-            ></textarea>
+              value={comment}
+              onChange={handleTextareaChange}
+              minLength={Constants.MIN_TEXT_LENGTH}
+              maxLength={Constants.MAX_TEXT_LENGTH}
+            />
             <div className='add-review__submit'>
-              <button className='add-review__btn' type='submit'>
+              <button
+                className='add-review__btn'
+                type='submit'
+                disabled={!isValid || isSending}
+              >
                 Post
               </button>
             </div>
