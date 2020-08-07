@@ -1,48 +1,106 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
-
-import Header from '../../components/header';
+import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import FavoriteButton from '../../components/favorite-button';
+import HeaderWrapped from '../../components/header';
 import Footer from '../../components/footer';
 import MoviesList from '../../components/movies-list';
 import TabsList from '../../components/tabs-list';
 import Overview from '../../components/overview/';
 import Details from '../../components/details';
 import Reviews from '../../components/reviews';
-import { movies, reviews } from '../../mocks';
-import { Constants } from '../../constants';
-import { ActionCreator } from '../../redux/reducer/data/actions';
-import { getCurrentTab } from '../../redux/reducer/data/selectors';
+import { getAuthorizationStatus } from '../../redux/reducer/user/selectors';
+import {
+  ActionCreator as DataActions,
+  Operations as DataOperations
+} from '../../redux/reducer/data/actions';
+import { Operations as ReviewsOperations } from '../../redux/reducer/reviews/actions';
+import {
+  getCurrentTab,
+  getSimilarMovies,
+  getMovieById
+} from '../../redux/reducer/data/selectors';
+import { getReviews } from '../../redux/reducer/reviews/selectors';
 
 class MoviePage extends PureComponent {
+  static propTypes = {
+    loadReviews: PropTypes.func.isRequired,
+    setCurrentTab: PropTypes.func.isRequired,
+    loadMovie: PropTypes.func.isRequired,
+    similarMovies: PropTypes.array.isRequired,
+    isAuthorizationRequired: PropTypes.bool.isRequired,
+    currentTab: PropTypes.string.isRequired,
+    match: PropTypes.object.isRequired,
+    movie: PropTypes.object.isRequired
+  };
+
+  componentDidMount() {
+    const { match, loadMovie, loadReviews } = this.props;
+    const id = match.params.id;
+    loadMovie(id);
+    loadReviews(id);
+  }
+
+  componentDidUpdate(prevProps) {
+    const { match, loadMovie, loadReviews } = this.props;
+    const id = match.params.id;
+    if (prevProps.match !== match) {
+      loadMovie(id);
+      loadReviews(id);
+    }
+  }
+
   onTabChange = tab => {
     this.props.setCurrentTab(tab);
   };
 
-  showContent = tab => {
+  showContent = (tab, movie, reviews) => {
     switch (tab) {
       case 'Overview':
-        return <Overview movie={movies[0]} />;
+        return <Overview movie={movie} />;
 
       case 'Details':
-        return <Details movie={movies[0]} />;
+        return <Details movie={movie} />;
 
       case 'Reviews':
         return <Reviews reviews={reviews} />;
     }
   };
   render() {
-    const { background, poster, title, genre, release } = movies[0];
-
+    const {
+      currentTab,
+      movie,
+      similarMovies,
+      reviews,
+      isAuthorizationRequired,
+      match
+    } = this.props;
+    const {
+      background,
+      poster,
+      title,
+      genre,
+      release,
+      color,
+      id,
+      isFavorite
+    } = movie;
     return (
       <>
-        <section className='movie-card movie-card--full'>
+        <section
+          className='movie-card movie-card--full'
+          style={{
+            backgroundColor: `${color}`
+          }}
+        >
           <div className='movie-card__hero'>
             <div className='movie-card__bg'>
               <img src={background} alt={title} />
             </div>
 
             <h1 className='visually-hidden'>WTW</h1>
-            <Header classModPrefix={`movie-card`} />
+            <HeaderWrapped classMod={`movie-card__head`} />
             <div className='movie-card__wrap'>
               <div className='movie-card__desc'>
                 <h2 className='movie-card__title'>{title}</h2>
@@ -52,27 +110,29 @@ class MoviePage extends PureComponent {
                 </p>
 
                 <div className='movie-card__buttons'>
-                  <button
-                    className='btn btn--play movie-card__button'
-                    type='button'
+                  <Link
+                    to={`/film/${id}/player`}
+                    className='btn movie-card__button'
                   >
                     <svg viewBox='0 0 19 19' width='19' height='19'>
                       <use xlinkHref='#play-s' />
                     </svg>
-                    <span>Play</span>
-                  </button>
-                  <button
-                    className='btn btn--list movie-card__button'
-                    type='button'
+                    Play
+                  </Link>
+
+                  <FavoriteButton
+                    id={id}
+                    isFavorite={isFavorite}
+                    match={match}
+                  />
+                  <Link
+                    to={
+                      !isAuthorizationRequired ? `/film/${id}/review` : `/login`
+                    }
+                    className='btn movie-card__button'
                   >
-                    <svg viewBox='0 0 19 20' width='19' height='20'>
-                      <use xlinkHref='#add' />
-                    </svg>
-                    <span>My list</span>
-                  </button>
-                  <a href='add-review.html' className='btn movie-card__button'>
                     Add review
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -85,20 +145,20 @@ class MoviePage extends PureComponent {
               <div className='movie-card__desc'>
                 <TabsList
                   onTabChange={this.onTabChange}
-                  currentTab={this.props.currentTab}
+                  currentTab={currentTab}
                 />
-                {this.showContent(this.props.currentTab)}
+                {this.showContent(currentTab, movie, reviews)}
               </div>
             </div>
           </div>
         </section>
         <div className='page-content'>
-          <section className='catalog catalog--like-this'>
-            <h2 className='catalog__title'>More like this</h2>
-            <MoviesList
-              movies={movies.slice(0, Constants.MAX_SIMILAR_MOVIES)}
-            />
-          </section>
+          {similarMovies.length ? (
+            <section className='catalog catalog--like-this'>
+              <h2 className='catalog__title'>More like this</h2>
+              <MoviesList movies={similarMovies} />
+            </section>
+          ) : null}
           <Footer />
         </div>
       </>
@@ -106,12 +166,21 @@ class MoviePage extends PureComponent {
   }
 }
 
-const mapStateToProps = state => ({
-  currentTab: getCurrentTab(state)
-});
+const mapStateToProps = (state, { match }) => {
+  const id = match.params.id;
+  return {
+    currentTab: getCurrentTab(state),
+    movie: getMovieById(state, id),
+    reviews: getReviews(state),
+    isAuthorizationRequired: getAuthorizationStatus(state),
+    similarMovies: getSimilarMovies(state, id)
+  };
+};
 
 const mapDispatchToProps = dispatch => ({
-  setCurrentTab: tab => dispatch(ActionCreator.setTab(tab))
+  setCurrentTab: tab => dispatch(DataActions.setTab(tab)),
+  loadMovie: id => dispatch(DataOperations.loadMovie(id)),
+  loadReviews: id => dispatch(ReviewsOperations.loadReviews(id))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(MoviePage);

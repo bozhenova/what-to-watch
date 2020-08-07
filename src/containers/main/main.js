@@ -1,26 +1,40 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 
-import HeaderWrapper from '../../components/header';
+import HeaderWrapped from '../../components/header';
 import Footer from '../../components/footer';
 import MoviesList from '../../components/movies-list/';
 import {
   getSortedMovies,
   getCurrentGenre,
   getPromoMovie,
-  getUniqueGenres
+  getUniqueGenres,
+  getMoreMoviesStatus
 } from '../../redux/reducer/data/selectors';
 import { ActionCreator } from '../../redux/reducer/data/actions';
 import { Constants } from '../../constants';
 import GenresList from '../../components/genres-list';
+import { getAuthorizationStatus } from '../../redux/reducer/user/selectors';
+import FavoriteButton from '../../components/favorite-button';
 
 class Main extends PureComponent {
+  static propTypes = {
+    setCurrentGenre: PropTypes.func.isRequired,
+    movies: PropTypes.array.isRequired,
+    currentGenre: PropTypes.string.isRequired,
+    promoMovie: PropTypes.object.isRequired,
+    genres: PropTypes.array.isRequired,
+    match: PropTypes.object.isRequired
+  };
+
   onGenreChange = genre => {
     this.props.setCurrentGenre(genre);
   };
 
   onButtonClick = () => {
-    console.log('clicked');
+    this.props.loadMoreMovies();
   };
 
   render() {
@@ -33,9 +47,24 @@ class Main extends PureComponent {
         Show more
       </button>
     );
-    const { movies, currentGenre, promoMovie, genres } = this.props;
-    const { color, background, title, poster, genre, release } = promoMovie;
-
+    const {
+      movies,
+      currentGenre,
+      promoMovie,
+      genres,
+      match,
+      moreMovies
+    } = this.props;
+    const {
+      color,
+      background,
+      title,
+      poster,
+      genre,
+      release,
+      isFavorite,
+      id
+    } = promoMovie;
     return (
       <>
         <section
@@ -48,7 +77,7 @@ class Main extends PureComponent {
             <img src={background} alt={title} />
           </div>
           <h1 className='visually-hidden'>WTW</h1>
-          <HeaderWrapper classModPrefix={`movie-card`} />
+          <HeaderWrapped classMod={`movie-card__head`} />
           <div className='movie-card__wrap'>
             <div className='movie-card__info'>
               <div className='movie-card__poster'>
@@ -62,24 +91,20 @@ class Main extends PureComponent {
                 </p>
 
                 <div className='movie-card__buttons'>
-                  <button
-                    className='btn btn--play movie-card__button'
-                    type='button'
+                  <Link
+                    to={`/film/${id}/player`}
+                    className='btn movie-card__button'
                   >
                     <svg viewBox='0 0 19 19' width='19' height='19'>
                       <use xlinkHref='#play-s' />
                     </svg>
-                    <span>Play</span>
-                  </button>
-                  <button
-                    className='btn btn--list movie-card__button'
-                    type='button'
-                  >
-                    <svg viewBox='0 0 19 20' width='19' height='20'>
-                      <use xlinkHref='#add' />
-                    </svg>
-                    <span>My list</span>
-                  </button>
+                    Play
+                  </Link>
+                  <FavoriteButton
+                    id={id}
+                    isFavorite={isFavorite}
+                    match={match}
+                  />
                 </div>
               </div>
             </div>
@@ -95,9 +120,15 @@ class Main extends PureComponent {
               genres={genres}
             />
             {movies.length ? (
-              <MoviesList movies={movies.slice(0, Constants.MAX_MOVIES)} />
+              <MoviesList
+                movies={
+                  moreMovies
+                    ? movies.slice(0, Constants.MORE_MAX_MOVIES)
+                    : movies.slice(0, Constants.MAX_MOVIES)
+                }
+              />
             ) : null}
-            {movies.length > Constants.MAX_MOVIES ? (
+            {movies.length > Constants.MAX_MOVIES && !moreMovies ? (
               <div className='catalog__more'>{ShowMoreButton}</div>
             ) : null}
           </section>
@@ -111,12 +142,15 @@ class Main extends PureComponent {
 const mapStateToProps = state => ({
   movies: getSortedMovies(state),
   promoMovie: getPromoMovie(state),
+  moreMovies: getMoreMoviesStatus(state),
   currentGenre: getCurrentGenre(state),
-  genres: getUniqueGenres(state)
+  genres: getUniqueGenres(state),
+  isAuthorizationRequired: getAuthorizationStatus(state)
 });
 
 const mapDispatchToProps = dispatch => ({
-  setCurrentGenre: genre => dispatch(ActionCreator.setGenre(genre))
+  setCurrentGenre: genre => dispatch(ActionCreator.setGenre(genre)),
+  loadMoreMovies: () => dispatch(ActionCreator.loadMoreMovies(true))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Main);
