@@ -16,6 +16,10 @@ export const ActionCreator = {
     type: types.LOAD_MOVIES,
     payload: movies
   }),
+  loadMoreMovies: moreMovies => ({
+    type: types.LOAD_MORE_MOVIES,
+    payload: moreMovies
+  }),
   loadPromoMovie: movie => ({
     type: types.LOAD_PROMO_MOVIE,
     payload: movie
@@ -42,7 +46,6 @@ export const Operations = {
     if (!movie) {
       return dispatch(Operations.loadMovies());
     }
-
     return Promise.resolve(movie);
   }
 };

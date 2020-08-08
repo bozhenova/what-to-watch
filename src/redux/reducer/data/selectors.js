@@ -5,6 +5,7 @@ export const getCurrentTab = state => state.data.currentTab;
 export const getCurrentGenre = state => state.data.currentGenre;
 export const getMovies = state => state.data.movies;
 export const getPromoMovie = state => state.data.promoMovie;
+export const getMoreMoviesStatus = state => state.data.moreMovies;
 
 export const getUniqueGenres = createSelector(getMovies, movies => {
   return [...new Set(movies.map(movie => movie.genre))];

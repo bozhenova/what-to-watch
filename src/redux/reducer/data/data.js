@@ -3,6 +3,7 @@ import { ActionTypes as types } from '../../ActionTypes';
 const initialState = {
   promoMovie: {},
   movies: [],
+  moreMovies: false,
   currentTab: 'Overview',
   currentGenre: 'All genres'
 };
@@ -23,6 +24,11 @@ export const reducer = (state = initialState, action) => {
       return {
         ...state,
         movies: action.payload
+      };
+    case types.LOAD_MORE_MOVIES:
+      return {
+        ...state,
+        moreMovies: action.payload
       };
     case types.LOAD_PROMO_MOVIE:
       return {
