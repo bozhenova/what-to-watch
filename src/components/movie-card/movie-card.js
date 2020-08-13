@@ -11,14 +11,19 @@ const MovieCard = ({ movie }) => {
 
   const onMouseEnter = () => {
     timer = setTimeout(() => {
+      clearTimeout(timer);
       setIsActive(true);
     }, 1000);
   };
 
   const onMouseLeave = () => {
-    clearTimeout(timer);
     setIsActive(false);
+    clearTimeout(timer);
   };
+
+  useEffect(() => {
+    return () => clearTimeout(timer);
+  }, [isActive]);
 
   return (
     <article
