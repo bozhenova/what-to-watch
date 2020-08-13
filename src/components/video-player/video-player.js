@@ -6,16 +6,28 @@ const VideoPlayer = ({ movie, isActive }) => {
   const videoRef = useRef();
 
   useEffect(() => {
-    if (isActive) {
-      videoRef.current.play();
-    } else {
-      videoRef.current.pause();
+    let playPromise = videoRef.current.play();
+    if (playPromise !== undefined) {
+      if (isActive) {
+        playPromise
+          .then(_ => {})
+          .catch(error => {
+            return error;
+          });
+      }
     }
   }, [isActive]);
 
   return (
-    <video width='280' muted height='175' poster={poster} ref={videoRef}>
-      <source src={preview} type='video/webm' />
+    <video
+      width='280'
+      muted
+      height='175'
+      poster={poster}
+      ref={videoRef}
+      src={preview}
+    >
+      {/* <source src={preview} /> */}
     </video>
   );
 };
