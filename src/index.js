@@ -31,8 +31,6 @@ const initApp = () => {
   );
 
   store.dispatch(DataOperations.loadMovies());
-  store.dispatch(DataOperations.loadPromoMovie());
-  store.dispatch(UserOperations.loadLoginData());
 
   ReactDOM.render(
     <Provider store={store}>

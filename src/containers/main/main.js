@@ -13,7 +13,7 @@ import {
   getUniqueGenres,
   getMoreMoviesStatus
 } from '../../redux/reducer/data/selectors';
-import { ActionCreator } from '../../redux/reducer/data/actions';
+import { ActionCreator, Operations } from '../../redux/reducer/data/actions';
 import { Constants } from '../../constants';
 import GenresList from '../../components/genres-list';
 import { getAuthorizationStatus } from '../../redux/reducer/user/selectors';
@@ -22,12 +22,17 @@ import FavoriteButton from '../../components/favorite-button';
 class Main extends PureComponent {
   static propTypes = {
     setCurrentGenre: PropTypes.func.isRequired,
+    loadPromoMovie: PropTypes.func.isRequired,
     movies: PropTypes.array.isRequired,
     currentGenre: PropTypes.string.isRequired,
     promoMovie: PropTypes.object.isRequired,
     genres: PropTypes.array.isRequired,
     match: PropTypes.object.isRequired
   };
+
+  componentDidMount() {
+    this.props.loadPromoMovie();
+  }
 
   onGenreChange = genre => {
     this.props.setCurrentGenre(genre);
@@ -150,7 +155,8 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   setCurrentGenre: genre => dispatch(ActionCreator.setGenre(genre)),
-  loadMoreMovies: () => dispatch(ActionCreator.loadMoreMovies(true))
+  loadMoreMovies: () => dispatch(ActionCreator.loadMoreMovies(true)),
+  loadPromoMovie: () => dispatch(Operations.loadPromoMovie())
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Main);
