@@ -11,15 +11,12 @@ import Overview from '../../components/overview/';
 import Details from '../../components/details';
 import Reviews from '../../components/reviews';
 import { getAuthorizationStatus } from '../../redux/reducer/user/selectors';
-import {
-  ActionCreator as DataActions,
-  Operations as DataOperations
-} from '../../redux/reducer/data/actions';
+import { ActionCreator as DataActions } from '../../redux/reducer/data/actions';
 import { Operations as ReviewsOperations } from '../../redux/reducer/reviews/actions';
 import {
   getCurrentTab,
   getSimilarMovies,
-  getMovieById
+  getMovie
 } from '../../redux/reducer/data/selectors';
 import { getReviews } from '../../redux/reducer/reviews/selectors';
 
@@ -27,26 +24,23 @@ class MoviePage extends PureComponent {
   static propTypes = {
     loadReviews: PropTypes.func.isRequired,
     setCurrentTab: PropTypes.func.isRequired,
-    loadMovie: PropTypes.func.isRequired,
     similarMovies: PropTypes.array.isRequired,
     isAuthorizationRequired: PropTypes.bool.isRequired,
     currentTab: PropTypes.string.isRequired,
     match: PropTypes.object.isRequired,
-    movie: PropTypes.object.isRequired
+    movie: PropTypes.object
   };
 
   componentDidMount() {
-    const { match, loadMovie, loadReviews } = this.props;
+    const { match, loadReviews } = this.props;
     const id = match.params.id;
-    loadMovie(id);
     loadReviews(id);
   }
 
   componentDidUpdate(prevProps) {
-    const { match, loadMovie, loadReviews } = this.props;
+    const { match, loadReviews } = this.props;
     const id = match.params.id;
     if (prevProps.match !== match) {
-      loadMovie(id);
       loadReviews(id);
     }
   }
@@ -76,6 +70,7 @@ class MoviePage extends PureComponent {
       isAuthorizationRequired,
       match
     } = this.props;
+
     const {
       background,
       poster,
@@ -88,70 +83,74 @@ class MoviePage extends PureComponent {
     } = movie;
     return (
       <>
-        <section
-          className='movie-card movie-card--full'
-          style={{
-            backgroundColor: `${color}`
-          }}
-        >
-          <div className='movie-card__hero'>
-            <div className='movie-card__bg'>
-              <img src={background} alt={title} />
-            </div>
+        {Object.keys(movie).length ? (
+          <section
+            className='movie-card movie-card--full'
+            style={{
+              backgroundColor: `${color}`
+            }}
+          >
+            <div className='movie-card__hero'>
+              <div className='movie-card__bg'>
+                <img src={background} alt={title} />
+              </div>
 
-            <h1 className='visually-hidden'>WTW</h1>
-            <HeaderWrapped classMod={`movie-card__head`} />
-            <div className='movie-card__wrap'>
-              <div className='movie-card__desc'>
-                <h2 className='movie-card__title'>{title}</h2>
-                <p className='movie-card__meta'>
-                  <span className='movie-card__genre'>{genre}</span>
-                  <span className='movie-card__year'>{release}</span>
-                </p>
+              <h1 className='visually-hidden'>WTW</h1>
+              <HeaderWrapped classMod={`movie-card__head`} />
+              <div className='movie-card__wrap'>
+                <div className='movie-card__desc'>
+                  <h2 className='movie-card__title'>{title}</h2>
+                  <p className='movie-card__meta'>
+                    <span className='movie-card__genre'>{genre}</span>
+                    <span className='movie-card__year'>{release}</span>
+                  </p>
 
-                <div className='movie-card__buttons'>
-                  <Link
-                    to={`/film/${id}/player`}
-                    className='btn movie-card__button'
-                  >
-                    <svg viewBox='0 0 19 19' width='19' height='19'>
-                      <use xlinkHref='#play-s' />
-                    </svg>
-                    Play
-                  </Link>
+                  <div className='movie-card__buttons'>
+                    <Link
+                      to={`/film/${id}/player`}
+                      className='btn movie-card__button'
+                    >
+                      <svg viewBox='0 0 19 19' width='19' height='19'>
+                        <use xlinkHref='#play-s' />
+                      </svg>
+                      Play
+                    </Link>
 
-                  <FavoriteButton
-                    id={id}
-                    isFavorite={isFavorite}
-                    match={match}
-                  />
-                  <Link
-                    to={
-                      !isAuthorizationRequired ? `/film/${id}/review` : `/login`
-                    }
-                    className='btn movie-card__button'
-                  >
-                    Add review
-                  </Link>
+                    <FavoriteButton
+                      id={id}
+                      isFavorite={isFavorite}
+                      match={match}
+                    />
+                    <Link
+                      to={
+                        !isAuthorizationRequired
+                          ? `/film/${id}/review`
+                          : `/login`
+                      }
+                      className='btn movie-card__button'
+                    >
+                      Add review
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div className='movie-card__wrap movie-card__translate-top'>
-            <div className='movie-card__info'>
-              <div className='movie-card__poster movie-card__poster--big'>
-                <img src={poster} alt={title} width='218' height='327' />
-              </div>
-              <div className='movie-card__desc'>
-                <TabsList
-                  onTabChange={this.onTabChange}
-                  currentTab={currentTab}
-                />
-                {this.showContent(currentTab, movie, reviews)}
+            <div className='movie-card__wrap movie-card__translate-top'>
+              <div className='movie-card__info'>
+                <div className='movie-card__poster movie-card__poster--big'>
+                  <img src={poster} alt={title} width='218' height='327' />
+                </div>
+                <div className='movie-card__desc'>
+                  <TabsList
+                    onTabChange={this.onTabChange}
+                    currentTab={currentTab}
+                  />
+                  {this.showContent(currentTab, movie, reviews)}
+                </div>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
+        ) : null}
         <div className='page-content'>
           {similarMovies.length ? (
             <section className='catalog catalog--like-this'>
@@ -159,6 +158,7 @@ class MoviePage extends PureComponent {
               <MoviesList movies={similarMovies} />
             </section>
           ) : null}
+
           <Footer />
         </div>
       </>
@@ -167,10 +167,10 @@ class MoviePage extends PureComponent {
 }
 
 const mapStateToProps = (state, { match }) => {
-  const id = match.params.id;
+  const { id } = match.params;
   return {
     currentTab: getCurrentTab(state),
-    movie: getMovieById(state, id),
+    movie: getMovie(state, id) || {},
     reviews: getReviews(state),
     isAuthorizationRequired: getAuthorizationStatus(state),
     similarMovies: getSimilarMovies(state, id)
@@ -179,7 +179,6 @@ const mapStateToProps = (state, { match }) => {
 
 const mapDispatchToProps = dispatch => ({
   setCurrentTab: tab => dispatch(DataActions.setTab(tab)),
-  loadMovie: id => dispatch(DataOperations.loadMovie(id)),
   loadReviews: id => dispatch(ReviewsOperations.loadReviews(id))
 });
 

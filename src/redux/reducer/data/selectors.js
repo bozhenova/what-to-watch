@@ -22,14 +22,22 @@ export const getSortedMovies = createSelector(
 );
 
 export const getMovieById = (state, id) => {
-  const movies = getSortedMovies(state);
+  const movies = getMovies(state);
   return movies && movies.find(movie => movie.id == id);
 };
+
+export const getMovie = createSelector(
+  getMovies,
+  getMovieById,
+  (movies, currentMovie) => {
+    return movies.find(movie => movie.id === currentMovie.id);
+  }
+);
 
 export const getSimilarMovies = createSelector(
   getSortedMovies,
   getMovieById,
-  (movies, currentMovie = {}) => {
+  (movies, currentMovie) => {
     return movies
       .filter(movie => movie.id !== currentMovie.id)
       .slice(0, Constants.MAX_SIMILAR_MOVIES);
