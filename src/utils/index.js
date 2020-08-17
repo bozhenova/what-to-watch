@@ -15,6 +15,14 @@ export const parseRuntime = time => {
   return `${hours >= 1 ? hours + `h` : ``} ${minutes}m`;
 };
 
+export const parseVideoRuntime = time => {
+  const minutes = Math.floor(time / 60);
+  const seconds = Math.floor(time % 60);
+  return `${minutes > 9 ? minutes : '0' + minutes}:${
+    seconds > 9 ? seconds : '0' + seconds
+  }`;
+};
+
 export const getRatingLevel = ratingScore => {
   if (ratingScore >= RatingLevels.BAD && ratingScore < RatingLevels.NORMAL) {
     return Ratings.BAD;

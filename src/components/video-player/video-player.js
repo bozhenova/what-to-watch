@@ -26,9 +26,7 @@ const VideoPlayer = ({ movie, isActive }) => {
       poster={poster}
       ref={videoRef}
       src={preview}
-    >
-      {/* <source src={preview} /> */}
-    </video>
+    />
   );
 };
 
