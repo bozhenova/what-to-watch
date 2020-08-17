@@ -6,8 +6,8 @@
   "scripts": {
     "eslint": "eslint --ext .jsx --ext .js src/",
     "test": "npm run eslint && jest",
-    "build": "webpack --mode production",
-    "start": "webpack-dev-server --mode development --open --hot --history-api-fallback"
+    "build": "cross-env NODE_ENV=production webpack --mode production",
+    "start": "cross-env NODE_ENV=development webpack-dev-server --mode development --open --hot --history-api-fallback"
   },
   "repository": {
     "type": "git",
@@ -29,16 +29,20 @@
   },
   "keywords": [],
   "homepage": "https://github.com/bozhenova/what-to-watch",
-  "author": "",
+  "author": "Bozhenova Margarita",
   "license": "ISC",
   "dependencies": {
     "@babel/plugin-proposal-class-properties": "^7.10.4",
     "axios": "^0.19.2",
     "babel-eslint": "^10.1.0",
+    "css-loader": "^4.2.1",
     "eslint": "^7.5.0",
     "eslint-plugin-react": "^7.20.3",
+    "html-webpack-plugin": "^4.3.0",
     "leaflet": "^1.6.0",
+    "mini-css-extract-plugin": "^0.10.0",
     "moment": "^2.27.0",
+    "optimize-css-assets-webpack-plugin": "^5.0.3",
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
@@ -47,7 +51,8 @@
     "recompose": "^0.30.0",
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0",
-    "reselect": "^4.0.0"
+    "reselect": "^4.0.0",
+    "style-loader": "^1.2.1"
   },
   "devDependencies": {
     "@babel/core": "^7.10.5",
@@ -56,6 +61,7 @@
     "axios-mock-adapter": "^1.18.2",
     "babel-jest": "^26.1.0",
     "babel-loader": "^8.1.0",
+    "cross-env": "^7.0.2",
     "enzyme": "^3.11.0",
     "enzyme-adapter-react-16": "^1.15.2",
     "jest": "^26.1.0",
