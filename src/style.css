@@ -1184,6 +1184,7 @@ main {
 }
 
 .player__time-value {
+  cursor: pointer;
   width: 60px;
   -ms-flex-negative: 0;
   flex-shrink: 0;

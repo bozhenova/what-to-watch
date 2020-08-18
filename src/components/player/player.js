@@ -11,6 +11,7 @@ const Player = () => {
   const togglerRef = useRef();
   const [isPlaying, setIsPlaying] = useState(false);
   const [time, setTime] = useState('00:00');
+  const [timeMode, setTimeMode] = useState('left');
   const { id } = useParams();
   const movie = useSelector(state => getMovieById(state, id)) || {};
   const { background, video, title } = movie;
@@ -55,7 +56,11 @@ const Player = () => {
       (videoRef.current.currentTime / videoRef.current.duration) * 100;
     progressRef.current.value = percent;
     togglerRef.current.style.left = `${percent}%`;
-    setTime(parseVideoRuntime(videoRef.current.currentTime));
+    const currentTime = videoRef.current.currentTime;
+    const duration = videoRef.current.duration;
+    timeMode === 'left'
+      ? setTime(parseVideoRuntime(currentTime))
+      : setTime(parseVideoRuntime(duration - currentTime));
   };
 
   const mouseMoveHandler = e => {
@@ -88,6 +93,10 @@ const Player = () => {
         video.msRequestFullscreen();
       }
     }
+  };
+
+  const onTimeModeToggle = () => {
+    timeMode === 'left' ? setTimeMode('elapsed') : setTimeMode('left');
   };
 
   return (
@@ -130,7 +139,9 @@ const Player = () => {
                   Toggler
                 </div>
               </div>
-              <div className='player__time-value'>{time}</div>
+              <div className='player__time-value' onClick={onTimeModeToggle}>
+                {timeMode === 'left' ? time : `-${time}`}
+              </div>
             </div>
 
             <div className='player__controls-row'>
