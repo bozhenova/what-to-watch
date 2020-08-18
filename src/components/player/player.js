@@ -1,21 +1,20 @@
 import React, { useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { Operations } from '../../redux/reducer/data/actions';
 import { getMovieById } from '../../redux/reducer/data/selectors';
 import history from '../../history';
 import { parseVideoRuntime } from '../../utils';
 
 const Player = () => {
-  const dispatch = useDispatch();
   const videoRef = useRef();
-
+  const progressRef = useRef();
+  const togglerRef = useRef();
   const [isPlaying, setIsPlaying] = useState(false);
-  const [time, setTime] = useState(false);
+  const [time, setTime] = useState('00:00');
   const { id } = useParams();
-  dispatch(Operations.loadMovie(id));
-  const movie = useSelector(state => getMovieById(state, id));
+  const movie = useSelector(state => getMovieById(state, id)) || {};
   const { background, video, title } = movie;
+  let mousedown = false;
 
   const onPlayClick = () => {
     videoRef.current.play();
@@ -31,9 +30,48 @@ const Player = () => {
     history.push(`/film/${id}`);
   };
 
-  const getTime = e => {
-    const time = parseVideoRuntime(e.target.duration);
-    setTime(time);
+  const clickHandler = e => {
+    if (mousedown) {
+      mousedown = false;
+      return;
+    }
+    const newTime =
+      (e.nativeEvent.offsetX / progressRef.current.offsetWidth) * 100;
+    videoRef.current.currentTime = (videoRef.current.duration * newTime) / 100;
+    handleProgress();
+  };
+
+  const handleMove = e => {
+    if (e.offsetX) {
+      const newTime = (e.offsetX / progressRef.current.offsetWidth) * 100;
+      videoRef.current.currentTime =
+        (videoRef.current.duration * newTime) / 100;
+      handleProgress();
+    }
+  };
+
+  const handleProgress = () => {
+    const percent =
+      (videoRef.current.currentTime / videoRef.current.duration) * 100;
+    progressRef.current.value = percent;
+    togglerRef.current.style.left = `${percent}%`;
+    setTime(parseVideoRuntime(videoRef.current.currentTime));
+  };
+
+  const mouseMoveHandler = e => {
+    return mousedown && handleMove(e);
+  };
+
+  const mouseUpHandler = () => {
+    mousedown = false;
+    document.removeEventListener('mousemove', mouseMoveHandler);
+    document.removeEventListener('mouseup', mouseUpHandler);
+  };
+
+  const mouseDownHandler = () => {
+    mousedown = true;
+    document.addEventListener('mousemove', mouseMoveHandler);
+    document.addEventListener('mouseup', mouseUpHandler);
   };
 
   const onFullScreenClick = () => {
@@ -53,76 +91,90 @@ const Player = () => {
   };
 
   return (
-    <div className='player'>
-      <video
-        className='player__video'
-        poster={background}
-        ref={videoRef}
-        // controls={true}
-        onLoadedMetadata={getTime}
-      >
-        <source src={video} />
-      </video>
+    <>
+      {Object.keys(movie).length ? (
+        <div className='player'>
+          <video
+            className='player__video'
+            poster={background}
+            ref={videoRef}
+            onTimeUpdate={handleProgress}
+            src={video}
+          />
 
-      <button type='button' className='player__exit' onClick={onExitClick}>
-        Exit
-      </button>
+          <button type='button' className='player__exit' onClick={onExitClick}>
+            Exit
+          </button>
 
-      <div className='player__controls'>
-        <div className='player__controls-row'>
-          <div className='player__time'>
-            <progress
-              className='player__progress'
-              value='0'
-              max='100'
-            ></progress>
-            <div className='player__toggler' style={{ left: '0%' }}>
-              Toggler
+          <div className='player__controls'>
+            <div className='player__controls-row'>
+              <div className='player__time'>
+                <progress
+                  ref={progressRef}
+                  onClick={clickHandler}
+                  onMouseMove={mouseMoveHandler}
+                  onMouseDown={mouseDownHandler}
+                  onMouseUp={mouseUpHandler}
+                  className='player__progress'
+                  value='0'
+                  max='100'
+                ></progress>
+                <div
+                  className='player__toggler'
+                  ref={togglerRef}
+                  style={{ left: '0%' }}
+                  onMouseMove={mouseMoveHandler}
+                  onMouseDown={mouseDownHandler}
+                  onMouseUp={mouseUpHandler}
+                >
+                  Toggler
+                </div>
+              </div>
+              <div className='player__time-value'>{time}</div>
+            </div>
+
+            <div className='player__controls-row'>
+              {!isPlaying ? (
+                <button
+                  type='button'
+                  className='player__play'
+                  onClick={onPlayClick}
+                >
+                  <svg viewBox='0 0 19 19' width='19' height='19'>
+                    <use xlinkHref='#play-s' />
+                  </svg>
+                  <span>Play</span>
+                </button>
+              ) : (
+                <button
+                  type='button'
+                  className='player__play'
+                  onClick={onPauseClick}
+                >
+                  <svg viewBox='0 0 14 21' width='14' height='21'>
+                    <use xlinkHref='#pause' />
+                  </svg>
+                  <span>Pause</span>
+                </button>
+              )}
+
+              <div className='player__name'>{title}</div>
+
+              <button
+                type='button'
+                className='player__full-screen'
+                onClick={onFullScreenClick}
+              >
+                <svg viewBox='0 0 27 27' width='27' height='27'>
+                  <use xlinkHref='#full-screen' />
+                </svg>
+                <span>Full screen</span>
+              </button>
             </div>
           </div>
-          <div className='player__time-value'>{time}</div>
         </div>
-
-        <div className='player__controls-row'>
-          {!isPlaying ? (
-            <button
-              type='button'
-              className='player__play'
-              onClick={onPlayClick}
-            >
-              <svg viewBox='0 0 19 19' width='19' height='19'>
-                <use xlinkHref='#play-s' />
-              </svg>
-              <span>Play</span>
-            </button>
-          ) : (
-            <button
-              type='button'
-              className='player__play'
-              onClick={onPauseClick}
-            >
-              <svg viewBox='0 0 14 21' width='14' height='21'>
-                <use xlinkHref='#pause' />
-              </svg>
-              <span>Pause</span>
-            </button>
-          )}
-
-          <div className='player__name'>{title}</div>
-
-          <button
-            type='button'
-            className='player__full-screen'
-            onClick={onFullScreenClick}
-          >
-            <svg viewBox='0 0 27 27' width='27' height='27'>
-              <use xlinkHref='#full-screen' />
-            </svg>
-            <span>Full screen</span>
-          </button>
-        </div>
-      </div>
-    </div>
+      ) : null}
+    </>
   );
 };
 
