@@ -3,7 +3,6 @@ import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import HeaderWrapped from '../header';
 import { getMovieById } from '../../redux/reducer/data/selectors';
-import { Operations as DataOperations } from '../../redux/reducer/data/actions';
 import {
   Operations as ReviewsOperations,
   ActionCreator
@@ -17,7 +16,6 @@ import { Constants } from '../../constants';
 const AddReview = () => {
   const form = useRef();
   const dispatch = useDispatch();
-
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
   const [isValid, setIsValid] = useState(false);
@@ -26,8 +24,7 @@ const AddReview = () => {
   const isSending = useSelector(getReviewSendingProcessStatus);
 
   const { id } = useParams();
-  const movie = useSelector(state => getMovieById(state, id));
-  dispatch(DataOperations.loadMovie(id));
+  const movie = useSelector(state => getMovieById(state, id)) || {};
 
   const handleTextareaChange = e => {
     setComment(e.target.value);

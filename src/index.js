@@ -16,6 +16,7 @@ import {
 import ErrorBoundary from './components/error-boundary';
 import App from './components/app';
 import history from './history';
+import './style.css';
 
 const initApp = () => {
   const api = configureAPI(() => {
