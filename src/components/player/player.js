@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { getMovieById } from '../../redux/reducer/data/selectors';
 import history from '../../history';
 import { parseVideoRuntime } from '../../utils';
@@ -9,12 +9,16 @@ const Player = () => {
   const videoRef = useRef();
   const progressRef = useRef();
   const togglerRef = useRef();
+
   const [isPlaying, setIsPlaying] = useState(false);
   const [time, setTime] = useState('00:00');
   const [timeMode, setTimeMode] = useState('left');
+
   const { id } = useParams();
+
   const movie = useSelector(state => getMovieById(state, id)) || {};
   const { background, video, title } = movie;
+
   let mousedown = false;
 
   const onPlayClick = () => {
@@ -31,6 +35,12 @@ const Player = () => {
     history.push(`/film/${id}`);
   };
 
+  const updateTime = newTime => {
+    const duration = videoRef.current.duration;
+    videoRef.current.currentTime = (duration * newTime) / 100;
+    handleProgress();
+  };
+
   const clickHandler = e => {
     if (mousedown) {
       mousedown = false;
@@ -38,33 +48,20 @@ const Player = () => {
     }
     const newTime =
       (e.nativeEvent.offsetX / progressRef.current.offsetWidth) * 100;
-    videoRef.current.currentTime = (videoRef.current.duration * newTime) / 100;
-    handleProgress();
-  };
-
-  const handleMove = e => {
-    if (e.offsetX) {
-      const newTime = (e.offsetX / progressRef.current.offsetWidth) * 100;
-      videoRef.current.currentTime =
-        (videoRef.current.duration * newTime) / 100;
-      handleProgress();
-    }
-  };
-
-  const handleProgress = () => {
-    const percent =
-      (videoRef.current.currentTime / videoRef.current.duration) * 100;
-    progressRef.current.value = percent;
-    togglerRef.current.style.left = `${percent}%`;
-    const currentTime = videoRef.current.currentTime;
-    const duration = videoRef.current.duration;
-    timeMode === 'left'
-      ? setTime(parseVideoRuntime(currentTime))
-      : setTime(parseVideoRuntime(duration - currentTime));
+    updateTime(newTime);
   };
 
   const mouseMoveHandler = e => {
-    return mousedown && handleMove(e);
+    if (e.offsetX && mousedown) {
+      const newTime = (e.offsetX / progressRef.current.offsetWidth) * 100;
+      updateTime(newTime);
+    }
+  };
+
+  const mouseDownHandler = () => {
+    mousedown = true;
+    document.addEventListener('mousemove', mouseMoveHandler);
+    document.addEventListener('mouseup', mouseUpHandler);
   };
 
   const mouseUpHandler = () => {
@@ -73,10 +70,17 @@ const Player = () => {
     document.removeEventListener('mouseup', mouseUpHandler);
   };
 
-  const mouseDownHandler = () => {
-    mousedown = true;
-    document.addEventListener('mousemove', mouseMoveHandler);
-    document.addEventListener('mouseup', mouseUpHandler);
+  const handleProgress = () => {
+    const duration = videoRef.current.duration;
+    let currentTime = videoRef.current.currentTime;
+
+    const percent = (currentTime / duration) * 100;
+    progressRef.current.value = percent;
+    togglerRef.current.style.left = `${percent}%`;
+
+    timeMode === 'left'
+      ? setTime(parseVideoRuntime(currentTime))
+      : setTime(parseVideoRuntime(duration - currentTime));
   };
 
   const onFullScreenClick = () => {
@@ -121,9 +125,7 @@ const Player = () => {
                 <progress
                   ref={progressRef}
                   onClick={clickHandler}
-                  onMouseMove={mouseMoveHandler}
                   onMouseDown={mouseDownHandler}
-                  onMouseUp={mouseUpHandler}
                   className='player__progress'
                   value='0'
                   max='100'
@@ -132,9 +134,7 @@ const Player = () => {
                   className='player__toggler'
                   ref={togglerRef}
                   style={{ left: '0%' }}
-                  onMouseMove={mouseMoveHandler}
                   onMouseDown={mouseDownHandler}
-                  onMouseUp={mouseUpHandler}
                 >
                   Toggler
                 </div>
