@@ -52,8 +52,12 @@ const Player = () => {
   };
 
   const mouseMoveHandler = e => {
-    if (e.offsetX && mousedown) {
-      const newTime = (e.offsetX / progressRef.current.offsetWidth) * 100;
+    const shift = togglerRef.current.offsetWidth / 2;
+    if (e.pageX && mousedown) {
+      const newTime =
+        ((e.pageX - togglerRef.current.offsetWidth - shift) /
+          progressRef.current.offsetWidth) *
+        100;
       updateTime(newTime);
     }
   };
