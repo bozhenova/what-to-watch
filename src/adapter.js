@@ -24,10 +24,11 @@ export const adaptMovie = movie => {
   };
 };
 
-export const adaptMovies = movies => movies.map(adaptMovie);
+export const adaptMovies = movies =>
+  Array.isArray(movies) ? movies.map(adaptMovie) : adaptMovie(movies);
 
-export const adaptComments = comments =>
-  comments.map(comment => ({
+export const adaptComment = comment => {
+  return {
     comment: comment[`comment`],
     date: comment[`date`],
     id: comment[`id`],
@@ -36,7 +37,11 @@ export const adaptComments = comments =>
       id: comment[`user`][`id`],
       name: comment[`user`][`name`]
     }
-  }));
+  };
+};
+
+export const adaptComments = comments =>
+  Array.isArray(comments) ? comments.map(adaptComment) : adaptComment(comments);
 
 export const adaptLoginResponse = userData => ({
   avatarUrl: userData[`avatar_url`],

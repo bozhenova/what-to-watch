@@ -295,3 +295,12 @@ export const reviews = [
     rating: 8.0
   }
 ];
+
+export const loginData = [
+  {
+    avatar_url: 'img/1.png',
+    id: 4,
+    is_pro: false,
+    name: 'Max'
+  }
+];
