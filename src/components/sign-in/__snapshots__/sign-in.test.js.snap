@@ -32,11 +32,18 @@ exports[`Sign In component renders correctly should render Sign In 1`] = `
         </span>
       </a>
     </div>
-    <h1
-      className="page-title user-page__title"
+    <div
+      className="user-block"
     >
-      Sign in
-    </h1>
+      <a
+        className="user-block__link"
+        onClick={[Function]}
+        onKeyPress={[Function]}
+        tabIndex={0}
+      >
+        Sign in
+      </a>
+    </div>
   </header>
   <div
     className="sign-in user-page__content"
@@ -53,6 +60,7 @@ exports[`Sign In component renders correctly should render Sign In 1`] = `
           className="sign-in__field"
         >
           <input
+            autoComplete="username"
             className="sign-in__input"
             id="user-email"
             name="user-email"
@@ -72,6 +80,7 @@ exports[`Sign In component renders correctly should render Sign In 1`] = `
           className="sign-in__field"
         >
           <input
+            autoComplete="current-password"
             className="sign-in__input"
             id="user-password"
             minLength={5}

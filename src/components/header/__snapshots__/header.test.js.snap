@@ -2,7 +2,7 @@
 
 exports[`Header component renders correctly should render a header 1`] = `
 <header
-  className="page-header undefined__head"
+  className="page-header "
 >
   <div
     className="logo"
@@ -29,10 +29,17 @@ exports[`Header component renders correctly should render a header 1`] = `
       </span>
     </a>
   </div>
-  <h1
-    className="page-title user-page__title"
+  <div
+    className="user-block"
   >
-    Sign in
-  </h1>
+    <a
+      className="user-block__link"
+      onClick={[Function]}
+      onKeyPress={[Function]}
+      tabIndex={0}
+    >
+      Sign in
+    </a>
+  </div>
 </header>
 `;
